@@ -1,0 +1,7 @@
+<launch>
+  <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" />
+  <node name="flip" pkg="lane_det" type="flip.py" />
+
+  <node name="lane_seg" pkg="lane_det" type="hybridnets.py" />
+  <node name="calibrate" pkg="lane_det" type="get_points.py" />
+</launch>

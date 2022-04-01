@@ -1,0 +1,11 @@
+<launch>
+  <node name="usb_cam" pkg="usb_cam" type="usb_cam_node">
+    <remap from="/usb_cam/image_raw" to="lane_det/image" />
+  </node>
+
+  <node name="lane_seg" pkg="lane_det" type="hybridnets.py" />
+  <node name="depth_estimation" pkg="lane_det" type="glpdepth.py" />
+
+  <node name="cluster" pkg="lane_det" type="cluster_lanes.py" />
+  <node name="broadcast" pkg="lane_det" type="broadcast.py" />
+</launch>
