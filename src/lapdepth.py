@@ -195,7 +195,7 @@ class Model:
         depth = depth[0, 0, dh : dh + new_unpad_h, dw : dw + new_unpad_w].copy()
 
         first_zero_row = 0
-        max_depth = 10.0
+        max_depth = 50.0
 
         # Normalize estimated depth to color it
         depth_min = 0.0
