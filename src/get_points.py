@@ -26,7 +26,7 @@ class GetPoints:
         self.bridge = CvBridge()
 
         self.image_sub = rospy.Subscriber(
-            "/lane_det/ll_seg_mask", Image, self.image_callback
+            "/lane_mapping/ll_seg_mask", Image, self.image_callback
         )
 
     def image_callback(self, msg):

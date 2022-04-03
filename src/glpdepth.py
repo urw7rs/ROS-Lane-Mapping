@@ -159,8 +159,10 @@ class Model:
     def __init__(self, client, model_name="glpdepth"):
         self.bridge = CvBridge()
 
-        self.image_sub = rospy.Subscriber("/lane_det/image", Image, self.image_callback)
-        self.publisher = rospy.Publisher("/lane_det/depth", Image, queue_size=1)
+        self.image_sub = rospy.Subscriber(
+            "/lane_mapping/image", Image, self.image_callback
+        )
+        self.publisher = rospy.Publisher("/lane_mapping/depth", Image, queue_size=1)
 
         self.model = SyncTritonModel(model_name, client)
         metadata = self.model.input_metadata[0]["shape"]

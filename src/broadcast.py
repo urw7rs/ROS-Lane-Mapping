@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import rospy
-from lane_det.msg import LanePoints
+from lane_mapping.msg import LanePoints
 
 import socket
 
@@ -9,7 +9,7 @@ import socket
 class Broadcaster:
     def __init__(self):
         self.seg_sub = rospy.Subscriber(
-            "/lane_det/ll_points", LanePoints, self.point_callback
+            "/lane_mapping/ll_points", LanePoints, self.point_callback
         )
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -23,8 +23,8 @@ class Broadcaster:
             message.append(f"{tf_poi[i]} {tf_poi[i]}")
         message = ", ".join(message) + ","
 
-        ip = rospy.get_param("/lane_det/ip", "127.0.0.1")
-        port = rospy.get_param("/lane_det/port", 5005)
+        ip = rospy.get_param("/lane_mapping/ip", "127.0.0.1")
+        port = rospy.get_param("/lane_mapping/port", 5005)
         self.sock.sendto(message.encode(), (ip, port))
 
 

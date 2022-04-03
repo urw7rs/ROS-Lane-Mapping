@@ -4,7 +4,7 @@ import math
 
 import rospy
 from sensor_msgs.msg import Image
-from lane_det.msg import LanePoints
+from lane_mapping.msg import LanePoints
 
 import numpy as np
 from sklearn import cluster
@@ -18,10 +18,10 @@ class Cluster:
         self.bridge = CvBridge()
 
         self.seg_sub = rospy.Subscriber(
-            "/lane_det/ll_seg_mask", Image, self.mask_callback
+            "/lane_mapping/ll_seg_mask", Image, self.mask_callback
         )
         self.publisher = rospy.Publisher(
-            "/lane_det/ll_points", LanePoints, queue_size=1
+            "/lane_mapping/ll_points", LanePoints, queue_size=1
         )
 
         self.dbscan = cluster.DBSCAN(eps=1, min_samples=5, n_jobs=-1)
@@ -33,9 +33,9 @@ class Cluster:
         self.h, self.w = mask.shape
         self.center = self.w / 2
 
-        bottom = int(self.h * rospy.get_param("/lane_det/top", (480 - 155) / 480))
-        middle = int(self.h * rospy.get_param("/lane_det/middle", (480 - 135) / 480))
-        top = int(self.h * rospy.get_param("/lane_det/bottom", (480 - 115) / 480))
+        bottom = int(self.h * rospy.get_param("/lane_mapping/top", (480 - 155) / 480))
+        middle = int(self.h * rospy.get_param("/lane_mapping/middle", (480 - 135) / 480))
+        top = int(self.h * rospy.get_param("/lane_mapping/bottom", (480 - 115) / 480))
 
         self.order = [bottom, middle, top]
 

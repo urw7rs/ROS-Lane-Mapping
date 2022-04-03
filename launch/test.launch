@@ -1,9 +1,0 @@
-<launch>
-  <node name="flip" pkg="lane_det" type="flip.py" />
-
-  <node name="lane_seg" pkg="lane_det" type="hybridnets.py" />
-  <node name="depth_estimation" pkg="lane_det" type="glpdepth.py" />
-
-  <node name="cluster" pkg="lane_det" type="cluster_lanes.py" />
-  <node name="broadcast" pkg="lane_det" type="broadcast.py" />
-</launch>

@@ -18,7 +18,7 @@ class Flip:
             self.img_callback,
         )
         self.pub = rospy.Publisher(
-            "/lane_det/image",
+            "/lane_mapping/image",
             Image,
             queue_size=1,
         )

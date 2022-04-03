@@ -156,16 +156,17 @@ def resize_unscale(img, new_shape=(640, 640), color=114):
 
 
 class Model:
-    def __init__(self, client, model_name="yolop_big"):
+    def __init__(self, client, model_name="lapdepth"):
         self.bridge = CvBridge()
 
-        self.image_sub = rospy.Subscriber("/lane_mapping/image", Image, self.image_callback)
-
-        self.ll_seg_pub = rospy.Publisher("/lane_mapping/ll_seg_mask", Image, queue_size=1)
+        self.image_sub = rospy.Subscriber(
+            "/lane_mapping/image", Image, self.image_callback
+        )
+        self.publisher = rospy.Publisher("/lane_mapping/depth", Image, queue_size=1)
 
         self.model = SyncTritonModel(model_name, client)
-
-        self.img_size = int(self.model.input_metadata[0]["shape"][-1])
+        metadata = self.model.input_metadata[0]["shape"]
+        self.img_shape = [int(s) for s in metadata[1:]]
 
     def image_callback(self, msg):
         img = self.bridge.imgmsg_to_cv2(msg, desired_encoding="rgb8")
@@ -174,7 +175,7 @@ class Model:
 
         # resize & normalize
         canvas, r, dw, dh, new_unpad_w, new_unpad_h = resize_unscale(
-            img, (self.img_size, self.img_size)
+            img, self.img_shape
         )
 
         img = canvas.copy().astype(np.float32)  # (3,640,640) RGB
@@ -188,19 +189,26 @@ class Model:
 
         img = img.transpose(2, 0, 1)
 
-        # inference: (1,n,6) (1,2,640,640) (1,2,640,640)
-        det_out, da_seg_out, ll_seg_out = self.model(img)
+        depth = self.model(img)
 
         # select ll segment area.
-        ll_seg_out = ll_seg_out[:, :, dh : dh + new_unpad_h, dw : dw + new_unpad_w]
+        depth = depth[0, 0, dh : dh + new_unpad_h, dw : dw + new_unpad_w].copy()
 
-        ll_seg_mask = np.argmax(ll_seg_out, axis=1)  # (?,?) (0|1)
+        first_zero_row = 0
+        max_depth = 10.0
 
-        ll_seg_mask *= 255
-        ll_seg_mask = ll_seg_mask.transpose(1, 2, 0)
+        # Normalize estimated depth to color it
+        depth_min = 0.0
+        norm_depth_map = 255 * (1.0 - (depth - depth_min) / (max_depth - depth_min))
+        norm_depth_map[norm_depth_map < 0] = 0
 
-        msg = self.bridge.cv2_to_imgmsg(ll_seg_mask.astype(np.uint8), encoding="mono8")
-        self.ll_seg_pub.publish(msg)
+        # Normalize and color the image
+        color_depth = cv2.applyColorMap(
+            cv2.convertScaleAbs(norm_depth_map, 1), cv2.COLORMAP_MAGMA
+        )
+
+        msg = self.bridge.cv2_to_imgmsg(color_depth, encoding="bgr8")
+        self.publisher.publish(msg)
 
 
 if __name__ == "__main__":
@@ -213,6 +221,6 @@ if __name__ == "__main__":
         print(f"failed to creat context {str(e)}")
         sys.exit(1)
 
-    rospy.init_node("model")
+    rospy.init_node("lapdepth")
     model = Model(client)
     rospy.spin()

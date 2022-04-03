@@ -25,10 +25,10 @@ class IPM:
         self.bridge = CvBridge()
 
         self.image_sub = rospy.Subscriber(
-            "/lane_det/ll_seg_mask_blur", Image, self.image_callback
+            "/lane_mapping/ll_seg_mask_blur", Image, self.image_callback
         )
         self.ipm_pub = rospy.Publisher(
-            "/lane_det/ipm",
+            "/lane_mapping/ipm",
             Image,
             queue_size=1,
         )
