@@ -27,11 +27,11 @@ run `$ docker run --rm -p8000:8000 -p8001:8001 -p8002:8002 -v $(pwd)/models:/mod
 ```
 xhost +
 docker run --rm \
-    --priviledged \
+    --privileged \
     --net host \
     -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v $(pwd):/catkin_ws/src/lane_mapping \
-    -it ros bash`
+    -it ros bash
 ```
 
 **launch ros nodes**
