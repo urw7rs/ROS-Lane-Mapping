@@ -6,6 +6,8 @@
   <node name="lane_seg" pkg="lane_mapping" type="hybridnets.py" />
   <node name="depth_estimation" pkg="lane_mapping" type="glpdepth.py" />
 
+  <node name="blur" pkg="lane_mapping" type="blur.py" />
+
   <node name="ipm" pkg="lane_mapping" type="ipm.py" />
 
   <node name="cluster" pkg="lane_mapping" type="cluster_lanes.py" />
