@@ -1,0 +1,9 @@
+<launch>
+  <node name="usb_cam" pkg="usb_cam" type="usb_cam_node">
+    <remap from="/usb_cam/image_raw" to="lane_mapping/image" />
+  </node>
+  <node name="flip" pkg="lane_mapping" type="flip.py" />
+  <node name="lane_seg" pkg="lane_mapping" type="hybridnets.py" />
+  <node name="ipm" pkg="lane_mapping" type="ipm.py" />
+  <node name="center_point" pkg="lane_mapping" type="center_point.py" output="screen" />
+</launch>
